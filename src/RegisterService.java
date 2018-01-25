@@ -1,4 +1,5 @@
 import com.mysql.jdbc.log.LogUtils;
+import net.sf.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,41 +16,35 @@ import java.sql.Statement;
 public class RegisterService extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String code = "";
-        String message = "";
+        String code = "300";
+        String message = "用户名已存在";
+
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
 
         String account = request.getParameter("Username");
         String password = request.getParameter("Password");
+        System.out.print(account + password);
+      //  DBUtil.getCreatConnect(account);
 
-        Connection connect = DBUtil.getConnect();
+        Connection connection = DBUtil.getConnect(account);
         try {
-            Statement statement = connect.createStatement();
-            String sql = "select Username from " + DBUtil.TABLE_USERINFO + " where Username='" + account + "'";
-
-            ResultSet result = statement.executeQuery(sql);
-            if (result.next()) { // 能查到该账号，说明已经注册过了
-                code = "100";
-                message = "该账号已存在";
-                return;
-            } else {
-                String sqlInsert = "insert into " + DBUtil.TABLE_USERINFO + "(Username, Password) values('"
-                        + account + "', '" + password + "')";
-                System.out.print("注册");
-
-                if (statement.executeUpdate(sqlInsert)>0) { // 否则进行注册逻辑，插入新账号密码到数据库
-                    code = "200";
-                    message = "注册成功";
-                } else {
-                    code = "300";
-                    message = "注册失败";
-                }
+            Statement statement = connection.createStatement();
+            String sqlInsert = "insert into " + DBUtil.TABLE_USERINFO + "(Username, Password) values('"
+                    + account + "', '" + password + "')";
+            if (statement.executeUpdate(sqlInsert)>0) { // 否则进行注册逻辑，插入新账号密码到数据库
+                code = "200";
+                message = "注册成功";
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        response.setContentType(DBUtil.Utf_8);
-        response.getWriter().append("code:").append(code).append(";message:").append(message);
+        JSONObject object = new JSONObject();
+        object.put("Code",code);
+        object.put("Message",message);
+        response.getWriter().append(object.toString());
     }
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request,response);
     }
 }
