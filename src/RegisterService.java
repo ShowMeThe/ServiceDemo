@@ -25,7 +25,7 @@ public class RegisterService extends HttpServlet {
         String account = request.getParameter("Username");
         String password = request.getParameter("Password");
         System.out.print(account + password);
-      //  DBUtil.getCreatConnect(account);
+        DBUtil.getCreatConnect(account);
 
         Connection connection = DBUtil.getConnect(account);
         try {

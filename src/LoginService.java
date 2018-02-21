@@ -27,7 +27,10 @@ public class LoginService extends HttpServlet{
         String message="失败";
         String username = null;
         String password = null;
+        String operation = null;
 
+
+        JSONObject object = new JSONObject();
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
@@ -38,20 +41,17 @@ public class LoginService extends HttpServlet{
         username = request.getParameter("username");
         password = request.getParameter("password");
 
+
         for(Cookie getCookie:cookies){
             Cookie cookie = new Cookie("JSESSION",getCookie.getValue());
             System.out.println("From Android:" + cookie.getValue());
             System.out.println( "From Web" + MySessionManager.getSession(cookie.getValue()));
 
-            if(cookie.getName().equals("JSESSION") && !cookie.getValue().isEmpty() && MySessionManager.getSession(cookie.getValue())!= null){
-
-                JSONObject object = new JSONObject();
+             if (cookie.getName().equals("JSESSION") && !cookie.getValue().isEmpty() && MySessionManager.getSession(cookie.getValue())!= null){
                 object.put("Code","400");
-                object.put("Message","");
+                object.put("Message","账号已经登录");
                 response.getWriter().append(object.toString());
                 return;
-            }else {
-                System.out.print("FALSE");
             }
         }
 
@@ -73,7 +73,7 @@ public class LoginService extends HttpServlet{
                 }
             }
 
-            JSONObject object = new JSONObject();
+
             object.put("Code",code);
             object.put("Message",message);
             response.getWriter().append(object.toString());
