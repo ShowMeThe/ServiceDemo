@@ -58,11 +58,13 @@ public class LoginService extends HttpServlet{
         session.setMaxInactiveInterval(60*60);
         session.setAttribute("Username",username);
         session.setAttribute("Password",password);
+        System.out.println(username);
 
-        Connection connection = DBUtil.getConnect("admin");
+        Connection connection = DBUtil.getConnect(username);
         try {
             Statement statement = connection.createStatement();
-            String res="SELECT * FROM " + DBUtil.TABLE_USERINFO + " where Username =" + username + " and Password =" + password;
+            String res="SELECT * FROM " + DBUtil.TABLE_USERINFO + " where Username = '"+ username + " '" + "and Password = '"+ password + " '" ;
+
             ResultSet result=statement.executeQuery(res);
 
             while (result.next()){
